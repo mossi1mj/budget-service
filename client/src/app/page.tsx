@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 
 // Example saved budgets — replace with real data
 const savedBudgets = [
@@ -32,16 +33,16 @@ export default function Home() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-3xl font-bold text-white">Budget Tracker</h1>
+    <div className="flex flex-1 flex-col gap-4 p-4 w-[75%] mx-auto">
+      <h1 className="text-3xl font-bold">Budget Tracker</h1>
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* CREATE BUDGET CARD */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <div className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 rounded-xl p-[2px] hover:scale-[1.02] transition-transform cursor-pointer">
-              <Card className="aspect-video rounded-xl bg-black/90 backdrop-blur-sm">
-                <CardContent className="flex h-full flex-col justify-center items-center text-white space-y-2">
+              <Card className="aspect-video rounded-xl">
+                <CardContent className="flex h-full flex-col justify-center items-center space-y-2 text-black dark:text-white">
                   <Plus size={32} />
                   <h2 className="text-xl font-semibold">Create a Budget</h2>
                 </CardContent>
@@ -74,16 +75,17 @@ export default function Home() {
         </Dialog>
 
         {/* RENDER SAVED BUDGETS */}
-        {savedBudgets.map((budget) => (
+        {savedBudgets.slice(0,5).map((budget) => (
           <Link key={budget.id} href={budget.route}>
             <Card className="aspect-video hover:bg-muted/70 transition rounded-xl">
-              <CardContent className="flex h-full items-center justify-center text-xl font-medium text-white">
+              <CardContent className="flex h-full items-center justify-center text-xl font-medium">
                 {budget.name}
               </CardContent>
             </Card>
           </Link>
         ))}
       </div>
+      <Separator className="my-4" />
     </div>
   );
 }
