@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { SideBar } from "@/components/sidebar";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +31,16 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased"
         )}`}
       >
-        <SidebarProvider>
-          <SideBar />
-          {/* {children} */}
-          <div className="flex-1">{children}</div>
-        </SidebarProvider>
+        <Providers
+          themeProps={{
+            attribute: "class",
+            defaultTheme: "system",
+            enableSystem: true,
+            disableTransitionOnChange: true,
+          }}
+        >
+          {children}
+        </Providers>
       </body>
     </html>
   );

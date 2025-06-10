@@ -13,7 +13,7 @@ import {
   SquareTerminal,
 } from "lucide-react";
 
-import { Navbar } from "@/components/navbar";
+// import { Navbar } from "@/components/navbar";
 import { NavProjects } from "@/components/projects";
 import { NavUser } from "@/components/user";
 // import { TeamSwitcher } from "@/components/team-switcher";
@@ -158,7 +158,7 @@ export function SideBar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <Navbar items={data.navMain} />
+        {/* <Navbar items={data.navMain} /> */}
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
