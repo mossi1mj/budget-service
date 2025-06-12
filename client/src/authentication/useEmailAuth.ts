@@ -1,6 +1,7 @@
 import { useTransition } from "react";
 import {
-  createUserWithEmailAndPassword, sendPasswordResetEmail,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
@@ -57,14 +58,14 @@ export const useEmailAuth = () => {
 
   const handleSignUp = () => {
     startTransition(async () => {
-        try {
+      try {
         if (!email || !password || !confirmPassword) {
-            toast.info("Please fill in all fields");
-            return;
+          toast.info("Please fill in all fields");
+          return;
         }
         if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
+          toast.error("Passwords do not match");
+          return;
         }
         const result = await createUserWithEmailAndPassword(
           auth,
@@ -83,16 +84,17 @@ export const useEmailAuth = () => {
         setPassword("");
         setConfirmPassword("");
         setSuccess("Successfully signed up.");
-
-        } catch (err: unknown) {
-          const errorMsg = (err as Error).message;
-          toast.error("Sign Up Failed", {
-            description: errorMsg,
-          });
-          setError(errorMsg);
-          return;
-        }
-    });}
+        router.push("/");
+      } catch (err: unknown) {
+        const errorMsg = (err as Error).message;
+        toast.error("Sign Up Failed", {
+          description: errorMsg,
+        });
+        setError(errorMsg);
+        return;
+      }
+    });
+  };
 
   const handleForgotPassword = async () => {
     if (!email) {
@@ -111,7 +113,6 @@ export const useEmailAuth = () => {
       });
     }
   };
-
 
   return {
     isPending,
