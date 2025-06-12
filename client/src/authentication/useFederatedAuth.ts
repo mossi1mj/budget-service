@@ -22,7 +22,7 @@ export enum AuthProviderName {
 
 export const useSignInWithProvider = () => {
   const router = useRouter();
-  const { setUser, setIsAuthenticated } = useUserContext();
+  const { setUser } = useUserContext();
 
   const signIn = async (providerName: AuthProviderName) => {
     let provider;
@@ -49,6 +49,8 @@ export const useSignInWithProvider = () => {
         description: `Signed in with ${providerName}`,
       });
 
+      console.log(firebaseUser);
+
       const uid = firebaseUser.uid;
       const email = firebaseUser.email || "";
       const [first_name, last_name] = (firebaseUser.displayName || " ").split(
@@ -72,9 +74,14 @@ export const useSignInWithProvider = () => {
         }
       }
 
-      setUser(user);
-      setIsAuthenticated(true);
-      console.log(`User signed in & loaded:`, user);
+      const firebaseUserWithDetails = {
+        ...user,
+        photoURL: firebaseUser.photoURL || null,
+        isAuthenticated: true,
+      };
+
+      setUser(firebaseUserWithDetails);
+      console.log(`User signed in & loaded:`, firebaseUserWithDetails);
       router.push("/");
     } catch (error: unknown) {
       toast("Sign In Failed", { description: (error as Error).message });

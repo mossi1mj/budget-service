@@ -3,18 +3,31 @@
 import { UserResponse } from "@/lib/openapi";
 import { createContext, useContext, useEffect, useState } from "react";
 
-interface UserContextProps {
-  user: UserResponse | null;
-  setUser: (user: UserResponse | null) => void;
+type User = UserResponse & {
+  photoURL?: string | null;
   isAuthenticated: boolean;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
+};
+
+interface UserContextProps {
+  user: User | null;
+  setUser: (user: User | null) => void;
 }
+
+export const defaultUser: User = {
+    id: 0,
+    uid: "",
+    email: "",
+    first_name: "",
+    last_name: "",
+    created_at: "",
+    photoURL: null,
+    isAuthenticated: false,
+};
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<UserResponse | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -29,8 +42,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         user,
         setUser,
-        isAuthenticated,
-        setIsAuthenticated,
       }}
     >
       {children}

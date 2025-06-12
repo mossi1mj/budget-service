@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
@@ -12,16 +12,14 @@ import Login from "@/components/login";
 import { useAuthContext } from "@/context/AuthenticationContext";
 import SignUp from "@/components/signup";
 
-export default function LoginPage({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+const LoginPage: React.FC = () => {
   const { hasAccount, setHasAccount } = useAuthContext();
   const { signIn } = useSignInWithProvider();
+
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <div className="flex flex-col gap-6">
           <Card className="overflow-hidden p-0">
             <CardContent className="grid p-0 md:grid-cols-2">
               <form className="p-6 md:p-8">
@@ -32,13 +30,17 @@ export default function LoginPage({
                       Login to your Bear Budget account
                     </p>
                   </div>
+
                   {hasAccount ? <Login /> : <SignUp />}
+
                   <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                     <span className="bg-card text-muted-foreground relative z-10 px-2">
                       Or continue with
                     </span>
                   </div>
+
                   <div className="grid grid-cols-3 gap-4">
+                    {/* Apple */}
                     <Button
                       variant="outline"
                       type="button"
@@ -56,13 +58,13 @@ export default function LoginPage({
                       </svg>
                       <span className="sr-only">Login with Apple</span>
                     </Button>
+
+                    {/* Google */}
                     <Button
                       variant="outline"
                       type="button"
                       className="w-full"
-                      onClick={() =>
-                        signIn(AuthProviderName.GOOGLE)
-                      }
+                      onClick={() => signIn(AuthProviderName.GOOGLE)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -75,13 +77,13 @@ export default function LoginPage({
                       </svg>
                       <span className="sr-only">Login with Google</span>
                     </Button>
+
+                    {/* Facebook */}
                     <Button
                       variant="outline"
                       type="button"
                       className="w-full"
-                      onClick={() =>
-                        signIn(AuthProviderName.FACEBOOK)
-                      }
+                      onClick={() => signIn(AuthProviderName.FACEBOOK)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -95,31 +97,37 @@ export default function LoginPage({
                       <span className="sr-only">Login with Meta</span>
                     </Button>
                   </div>
-                  {hasAccount ? (
-                    <div className="text-center text-sm">
-                      Don&apos;t have an account?{" "}
-                      <a
-                        href="#"
-                        onClick={() => setHasAccount(false)}
-                        className="underline underline-offset-4"
-                      >
-                        Sign up
-                      </a>
-                    </div>
-                  ) : (
-                    <div className="text-center text-sm">
-                      Have an account?{" "}
-                      <a
-                        href="#"
-                        onClick={() => setHasAccount(true)}
-                        className="underline underline-offset-4"
-                      >
-                        Login
-                      </a>
-                    </div>
-                  )}
+
+                  {/* Toggle Auth View */}
+                  <div className="text-center text-sm">
+                    {hasAccount ? (
+                      <>
+                        Don&apos;t have an account?{" "}
+                        <a
+                          href="#"
+                          onClick={() => setHasAccount(false)}
+                          className="underline underline-offset-4"
+                        >
+                          Sign up
+                        </a>
+                      </>
+                    ) : (
+                      <>
+                        Have an account?{" "}
+                        <a
+                          href="#"
+                          onClick={() => setHasAccount(true)}
+                          className="underline underline-offset-4"
+                        >
+                          Login
+                        </a>
+                      </>
+                    )}
+                  </div>
                 </div>
               </form>
+
+              {/* Illustration */}
               <div className="bg-muted relative hidden md:block justify-center items-center">
                 <Image
                   src="/login.svg"
@@ -130,6 +138,8 @@ export default function LoginPage({
               </div>
             </CardContent>
           </Card>
+
+          {/* Terms Notice */}
           <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
             By clicking continue, you agree to our{" "}
             <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
@@ -138,4 +148,6 @@ export default function LoginPage({
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;
