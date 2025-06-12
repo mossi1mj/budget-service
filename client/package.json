@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-client": "npx openapi --input http://127.0.0.1:8000/openapi.json --output src/lib/openapi --client fetch"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -38,6 +39,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "openapi-typescript-codegen": "^0.29.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"

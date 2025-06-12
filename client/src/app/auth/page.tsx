@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import {
   AuthProviderName,
-  signInWithProvider,
+  useSignInWithProvider,
 } from "@/authentication/useFederatedAuth";
 import Login from "@/components/login";
 import { useAuthContext } from "@/context/AuthenticationContext";
@@ -17,6 +17,7 @@ export default function LoginPage({
   ...props
 }: React.ComponentProps<"div">) {
   const { hasAccount, setHasAccount } = useAuthContext();
+  const { signIn } = useSignInWithProvider();
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
@@ -42,7 +43,7 @@ export default function LoginPage({
                       variant="outline"
                       type="button"
                       className="w-full"
-                      onClick={() => signInWithProvider(AuthProviderName.APPLE)}
+                      onClick={() => signIn(AuthProviderName.APPLE)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +61,7 @@ export default function LoginPage({
                       type="button"
                       className="w-full"
                       onClick={() =>
-                        signInWithProvider(AuthProviderName.GOOGLE)
+                        signIn(AuthProviderName.GOOGLE)
                       }
                     >
                       <svg
@@ -79,7 +80,7 @@ export default function LoginPage({
                       type="button"
                       className="w-full"
                       onClick={() =>
-                        signInWithProvider(AuthProviderName.FACEBOOK)
+                        signIn(AuthProviderName.FACEBOOK)
                       }
                     >
                       <svg

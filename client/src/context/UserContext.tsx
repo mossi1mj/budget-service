@@ -1,16 +1,11 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-interface User {
-  email: string;
-  firebase_uid: string;
-  first_name: string;
-  last_name: string;
-}
+import { UserResponse } from "@/lib/openapi";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface UserContextProps {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: UserResponse | null;
+  setUser: (user: UserResponse | null) => void;
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
 }
@@ -18,8 +13,16 @@ interface UserContextProps {
 const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      console.log("User context updated:", user);
+    } else {
+      console.log("User is null (signed out or not authenticated yet)");
+    }
+  }, [user]);
 
   return (
     <UserContext.Provider

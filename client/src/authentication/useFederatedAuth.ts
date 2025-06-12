@@ -1,3 +1,5 @@
+"use client";
+
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -5,8 +7,11 @@ import {
   OAuthProvider,
 } from "firebase/auth";
 
-import { auth } from "./firebase";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { UsersService } from "@/lib/openapi";
+import { useUserContext } from "@/context/UserContext";
+import { auth } from "./firebase";
 
 export enum AuthProviderName {
   GOOGLE = "google",
@@ -15,35 +20,67 @@ export enum AuthProviderName {
   APPLE = "apple",
 }
 
-export const signInWithProvider = async (providerName: AuthProviderName) => {
-  let provider;
+export const useSignInWithProvider = () => {
+  const router = useRouter();
+  const { setUser, setIsAuthenticated } = useUserContext();
 
-  switch (providerName) {
-    case "google":
-      provider = new GoogleAuthProvider();
-      break;
-    case "facebook":
-      provider = new FacebookAuthProvider();
-      break;
-    case "apple":
-      provider = new OAuthProvider("apple.com");
-      break;
-    default:
-      throw new Error("Unsupported provider");
-  }
+  const signIn = async (providerName: AuthProviderName) => {
+    let provider;
 
-  try {
-    const result = await signInWithPopup(auth, provider);
-    toast(`Hi, ${result.user.displayName}`, {
-      description: `You have successfully signed in with ${providerName}`,
-    });
+    switch (providerName) {
+      case "google":
+        provider = new GoogleAuthProvider();
+        break;
+      case "facebook":
+        provider = new FacebookAuthProvider();
+        break;
+      case "apple":
+        provider = new OAuthProvider("apple.com");
+        break;
+      default:
+        throw new Error("Unsupported provider");
+    }
 
-    return console.log(
-      `User signed in with ${providerName}:`,
-      result.user
-    );
-  } catch (error: unknown) {
-    toast("Sign In Failed", { description: (error as Error).message });
-    throw new Error(`Sign in with ${providerName} failed: ${(error as Error).message}`);
-  }
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+
+      toast(`Hi, ${firebaseUser.displayName}`, {
+        description: `Signed in with ${providerName}`,
+      });
+
+      const uid = firebaseUser.uid;
+      const email = firebaseUser.email || "";
+      const [first_name, last_name] = (firebaseUser.displayName || " ").split(
+        " "
+      );
+
+      // Try to fetch user
+      let user;
+      try {
+        user = await UsersService.fetchUserUsersUidGet(uid);
+      } catch (error: unknown) {
+        if ((error as { status?: number })?.status === 404) {
+          user = await UsersService.registerUserUsersPost({
+            uid,
+            email,
+            first_name,
+            last_name,
+          });
+        } else {
+          throw error;
+        }
+      }
+
+      setUser(user);
+      setIsAuthenticated(true);
+      console.log(`User signed in & loaded:`, user);
+      router.push("/");
+    } catch (error: unknown) {
+      toast("Sign In Failed", { description: (error as Error).message });
+      console.error(error);
+    }
+  };
+
+  return { signIn };
 };
