@@ -13,4 +13,5 @@ export type { UserResponse } from './models/UserResponse';
 export type { ValidationError } from './models/ValidationError';
 
 export { DefaultService } from './services/DefaultService';
+export { PlaidService } from './services/PlaidService';
 export { UsersService } from './services/UsersService';
