@@ -1,0 +1,21 @@
+# Web framework
+fastapi
+uvicorn[standard]
+
+# Environment variables
+python-dotenv
+
+# Database
+sqlalchemy
+psycopg2-binary  # PostgreSQL driver
+
+# Security
+bcrypt
+itsdangerous
+werkzeug
+
+# Data validation
+pydantic[email]
+
+# Third-party APIs
+plaid_python
