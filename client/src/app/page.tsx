@@ -13,6 +13,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { usePlaidTransactions } from "@/hooks/use-transactions";
+import { auth } from "@/authentication/firebase";
+import { useUserContext } from "@/context/UserContext";
 
 // Example saved budgets — replace with real data
 const savedBudgets = [
@@ -22,6 +25,32 @@ const savedBudgets = [
 
 export default function Home() {
   const [open, setOpen] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const { user } = useUserContext();
+
+  useState(() => {
+    auth.currentUser?.getIdToken().then((resolvedToken) => {
+      setToken(resolvedToken || null);
+    });
+  }, []);
+
+  const { transactions, isLoading, isError } = usePlaidTransactions(token);
+
+  if (!user || !user.isAuthenticated) {
+    return <div>Please log in to view transactions.</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading transactions...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading transactions or no bank linked yet.</div>;
+  }
+
+  if (!transactions || !transactions.transactions?.length) {
+    return <div>No transactions found. Have you linked your bank?</div>;
+  }
 
   // const budgetTemplates = [
   //   "Blank",
@@ -148,6 +177,16 @@ export default function Home() {
         ))}
       </div>
       <Separator className="my-4" />
+      <div>
+        <h3>Your recent transactions:</h3>
+        <ul>
+          {transactions.transactions.map((tx: any) => (
+            <li key={tx.transaction_id}>
+              {tx.date} — {tx.name} — {tx.amount} {tx.iso_currency_code}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

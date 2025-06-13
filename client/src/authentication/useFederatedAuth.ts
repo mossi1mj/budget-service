@@ -49,7 +49,8 @@ export const useSignInWithProvider = () => {
         description: `Signed in with ${providerName}`,
       });
 
-      console.log(firebaseUser);
+      const idToken = await firebaseUser.getIdToken();
+      console.log("ID Token:", idToken);
 
       const uid = firebaseUser.uid;
       const email = firebaseUser.email || "";

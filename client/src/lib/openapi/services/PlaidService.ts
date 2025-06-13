@@ -10,15 +10,20 @@ export class PlaidService {
      * Create Link Token
      * Generate a new Plaid Link token using a Firebase UID.
      * @param uid
+     * @param authorization
      * @returns any Successful Response
      * @throws ApiError
      */
     public static createLinkTokenPlaidCreateLinkTokenPost(
         uid: string,
+        authorization?: (string | null),
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/plaid/create_link_token',
+            headers: {
+                'authorization': authorization,
+            },
             query: {
                 'uid': uid,
             },
