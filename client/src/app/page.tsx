@@ -16,6 +16,166 @@ import { Separator } from "@/components/ui/separator";
 import { usePlaidTransactions } from "@/hooks/use-transactions";
 import { auth } from "@/authentication/firebase";
 import { useUserContext } from "@/context/UserContext";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  useReactTable,
+  SortingState,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+
+export type Transaction = {
+  transaction_id: string;
+  date: string;
+  name: string;
+  amount: number;
+  iso_currency_code: string;
+  personal_finance_category?: {
+    primary: string;
+    detailed: string;
+  };
+  pending: boolean;
+};
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
+
+export const columns: ColumnDef<Transaction>[] = [
+  {
+    accessorKey: "date",
+    header: "Date",
+    enableSorting: true,
+  },
+  {
+    accessorKey: "name",
+    header: "Name",
+    enableSorting: true,
+    enableGlobalFilter: true,
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    enableSorting: true,
+    cell: ({ row }) => {
+      const amount = row.original.amount;
+      return (
+        <span className={amount < 0 ? "text-red-500" : "text-green-600"}>
+          {amount < 0 ? "-" : "+"}${Math.abs(amount).toFixed(2)}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "personal_finance_category.primary",
+    header: "Category",
+    enableSorting: true,
+    cell: ({ row }) => row.original.personal_finance_category?.primary || "—",
+  },
+  {
+    accessorKey: "pending",
+    header: "Status",
+    enableSorting: true,
+    cell: ({ row }) =>
+      row.original.pending ? (
+        <span className="text-yellow-600">Pending</span>
+      ) : (
+        <span className="text-green-600">Posted</span>
+      ),
+  },
+];
+
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      sorting,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+
+  return (
+    <div className="rounded-md border mt-4">
+      <div className="p-2">
+        <Input
+          placeholder="Search..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                  className="cursor-pointer select-none"
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                  {header.column.getIsSorted() === "asc" ? " 🔼" : ""}
+                  {header.column.getIsSorted() === "desc" ? " 🔽" : ""}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
 
 // Example saved budgets — replace with real data
 const savedBudgets = [
@@ -29,37 +189,17 @@ export default function Home() {
   const { user } = useUserContext();
 
   useState(() => {
-    auth.currentUser?.getIdToken().then((resolvedToken) => {
+    const result = auth.currentUser?.getIdToken().then((resolvedToken) => {
       setToken(resolvedToken || null);
     });
+    console.log("Current user token:", result);
+    return result;
   }, []);
 
   const { transactions, isLoading, isError } = usePlaidTransactions(token);
 
-  if (!user || !user.isAuthenticated) {
-    return <div>Please log in to view transactions.</div>;
-  }
+  console.log("Transactions:", transactions);
 
-  if (isLoading) {
-    return <div>Loading transactions...</div>;
-  }
-
-  if (isError) {
-    return <div>Error loading transactions or no bank linked yet.</div>;
-  }
-
-  if (!transactions || !transactions.transactions?.length) {
-    return <div>No transactions found. Have you linked your bank?</div>;
-  }
-
-  // const budgetTemplates = [
-  //   "Blank",
-  //   "Personal",
-  //   "Travel",
-  //   "Groceries",
-  //   "Holiday",
-  //   "Event",
-  // ];
   const budgetTemplates = [
     {
       name: "Blank",
@@ -177,16 +317,24 @@ export default function Home() {
         ))}
       </div>
       <Separator className="my-4" />
-      <div>
-        <h3>Your recent transactions:</h3>
-        <ul>
-          {transactions.transactions.map((tx: any) => (
-            <li key={tx.transaction_id}>
-              {tx.date} — {tx.name} — {tx.amount} {tx.iso_currency_code}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {isLoading && (
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </div>
+      )}
+
+      {isError && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>Failed to load transactions.</AlertDescription>
+        </Alert>
+      )}
+
+      {user?.isAuthenticated && !isLoading && !isError && transactions?.length > 0 && (
+        <DataTable columns={columns} data={transactions} />
+      )}
     </div>
   );
 }

@@ -138,8 +138,8 @@ def get_transactions(request: Request, db: Session = Depends(get_db), uid: str =
         raise HTTPException(status_code=401, detail="User or access token not found.")
 
     try:
-        start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
-        end_date = datetime.now().strftime("%Y-%m-%d")
+        start_date = (datetime.now() - timedelta(days=90)).date()
+        end_date = datetime.now().date()
 
         request = TransactionsGetRequest(
             access_token=user.access_token,
