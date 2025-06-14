@@ -5,8 +5,8 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
+  Landmark,
   LogOut,
-  Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,14 +25,90 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { toast } from "sonner";
 import { defaultUser, useUserContext } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/authentication/firebase";
+import { useEffect, useState } from "react";
+import { PlaidService } from "@/lib/openapi";
+import { usePlaidLink } from "react-plaid-link";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, setUser } = useUserContext();
   const router = useRouter();
+
+  const [linkToken, setLinkToken] = useState<string | null>(null);
+
+  // Create Plaid Link Token
+  const createLinkToken = async () => {
+    if (!user) {
+      toast.error("User must be signed in");
+      return;
+    }
+
+    const token = await auth.currentUser?.getIdToken();
+    console.log("Current user token:", token);
+    if (!token) {
+      return toast.error("User must be authenticated");
+    }
+
+    try {
+      const response =
+        await PlaidService.createLinkTokenPlaidCreateLinkTokenPost(
+          user.uid,
+          `Bearer ${token}`
+        );
+      setLinkToken(response.link_token);
+    } catch (err) {
+      console.error("Failed to create Plaid link token:", err);
+      toast.error("Failed to start bank linking");
+    }
+  };
+
+  // Use Plaid Link hook
+  const { open, ready } = usePlaidLink({
+    token: linkToken || "",
+    onSuccess: async (public_token: string) => {
+      try {
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) {
+          toast.error("Authentication required to link bank");
+          return;
+        }
+
+        await PlaidService.exchangeTokenPlaidExchangePublicTokenPost(
+          public_token,
+          `Bearer ${token}`
+        );
+        toast.success("Bank connected successfully!");
+        setLinkToken(null);
+      } catch (error) {
+        console.error("Failed to exchange public token:", error);
+        toast.error("Failed to connect bank");
+      }
+    },
+
+    onExit: (error) => {
+      if (error) {
+        toast.error(`Plaid linking exited: ${error.error_message}`);
+      }
+      setLinkToken(null);
+    },
+  });
+
+  const handleConnectBankClick = async () => {
+    if (!linkToken) {
+      await createLinkToken();
+    }
+  };
+
+  // Effect: open Plaid Link modal when linkToken is set
+  useEffect(() => {
+    if (linkToken && ready) {
+      open();
+    }
+  }, [linkToken, ready, open]);
 
   const handleLogout = async () => {
     try {
@@ -44,7 +120,11 @@ export function NavUser() {
   };
 
   const userOptions = [
-    { icon: <Sparkles />, label: "Upgrade to Pro" },
+    {
+      icon: <Landmark />,
+      label: "Connect Bank",
+      onClick: handleConnectBankClick,
+    },
     { separator: true },
     { icon: <BadgeCheck />, label: "Account" },
     { icon: <CreditCard />, label: "Billing" },

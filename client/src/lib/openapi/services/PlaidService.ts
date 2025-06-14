@@ -10,15 +10,20 @@ export class PlaidService {
      * Create Link Token
      * Generate a new Plaid Link token using a Firebase UID.
      * @param uid
+     * @param authorization
      * @returns any Successful Response
      * @throws ApiError
      */
     public static createLinkTokenPlaidCreateLinkTokenPost(
         uid: string,
+        authorization?: (string | null),
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/plaid/create_link_token',
+            headers: {
+                'authorization': authorization,
+            },
             query: {
                 'uid': uid,
             },
@@ -31,19 +36,19 @@ export class PlaidService {
      * Exchange Token
      * Exchange a public token for an access token and save it to the user's record.
      * @param publicToken
-     * @param xUserUid
+     * @param authorization
      * @returns any Successful Response
      * @throws ApiError
      */
     public static exchangeTokenPlaidExchangePublicTokenPost(
         publicToken: string,
-        xUserUid?: (string | null),
+        authorization?: (string | null),
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/plaid/exchange_public_token',
             headers: {
-                'x-user-uid': xUserUid,
+                'authorization': authorization,
             },
             query: {
                 'public_token': publicToken,
@@ -56,18 +61,18 @@ export class PlaidService {
     /**
      * Get Accounts
      * Get linked bank accounts using the stored access token.
-     * @param xUserUid
+     * @param authorization
      * @returns any Successful Response
      * @throws ApiError
      */
     public static getAccountsPlaidAccountsGet(
-        xUserUid?: (string | null),
+        authorization?: (string | null),
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/plaid/accounts',
             headers: {
-                'x-user-uid': xUserUid,
+                'authorization': authorization,
             },
             errors: {
                 422: `Validation Error`,
@@ -77,18 +82,18 @@ export class PlaidService {
     /**
      * Get Balance
      * Get real-time balance for all accounts.
-     * @param xUserUid
+     * @param authorization
      * @returns any Successful Response
      * @throws ApiError
      */
     public static getBalancePlaidBalanceGet(
-        xUserUid?: (string | null),
+        authorization?: (string | null),
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/plaid/balance',
             headers: {
-                'x-user-uid': xUserUid,
+                'authorization': authorization,
             },
             errors: {
                 422: `Validation Error`,
@@ -98,18 +103,18 @@ export class PlaidService {
     /**
      * Get Transactions
      * Get recent transactions for the user.
-     * @param xUserUid
+     * @param authorization
      * @returns any Successful Response
      * @throws ApiError
      */
     public static getTransactionsPlaidTransactionsGet(
-        xUserUid?: (string | null),
+        authorization?: (string | null),
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/plaid/transactions',
             headers: {
-                'x-user-uid': xUserUid,
+                'authorization': authorization,
             },
             errors: {
                 422: `Validation Error`,
