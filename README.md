@@ -3,18 +3,18 @@ A personal budgeting app that connects to your real financial data
 
 Here is a complete UI/UX architecture and design document for your finance budget application, written from the perspective of a senior UI/UX engineer. The focus is on clarity, ease of use, and seamless user flow.
 
-⸻
+---
 
-FINANCE BUDGET APP — UI/UX DESIGN DOCUMENT
+# FINANCE BUDGET APP — UI/UX DESIGN DOCUMENT
 
-GOAL
+## GOAL
 
 Design a finance budget web app with an intuitive and frictionless experience. The application allows:
-	•	Guest users to create and explore budgets
-	•	Logged-in users to save and manage budgets
-	•	Verified users (with Plaid integration) to receive personalized insights and recommendations
+	- Guest users to create and explore budgets
+	- Logged-in users to save and manage budgets
+	- Verified users (with Plaid integration) to receive personalized insights and recommendations
 
-⸻
+##
 
 CORE FEATURES
 	1.	Budget creation (custom or from templates)
@@ -28,7 +28,7 @@ CORE FEATURES
 	9.	Real-time budget tracking
 	10.	Dashboard overview (summary of budgets, alerts)
 
-⸻
+---
 
 APPLICATION PAGES
 	1.	Landing Page
@@ -42,14 +42,14 @@ APPLICATION PAGES
 	9.	Bank Link (Plaid) Modal
 	10.	Settings Page
 
-⸻
+##
 
 USER TYPES
 	1.	Guest User
 	2.	Registered User (Logged In)
 	3.	Linked User (Plaid Connected)
 
-⸻
+##
 
 USER STORIES & FLOWS
 
@@ -58,7 +58,8 @@ USER STORIES & FLOWS
 User Story
 As a guest, I want to create a custom budget without logging in so I can get started quickly.
 
-Click-by-Click Flow (Playwright-style)
+### Click-by-Click Flow (Playwright-style)
+
 
 - User lands on Landing Page
 - Clicks “Start a Custom Budget”
