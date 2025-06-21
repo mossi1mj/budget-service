@@ -5,9 +5,9 @@ import {
   ThemeProvider as NextThemesProvider,
   ThemeProviderProps,
 } from "next-themes";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { SideBar } from "@/components/sidebar";
-import HeaderLayout from "@/components/header";
+// import { SidebarProvider } from "@/components/ui/sidebar";
+// import { SideBar } from "@/components/sidebar";
+// import HeaderLayout from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/context/UserContext";
 import { AuthProvider } from "@/context/AuthenticationContext";
@@ -22,10 +22,11 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <NextThemesProvider {...themeProps}>
       <UserProvider>
         <AuthProvider>
-          <SidebarProvider>
-            <SideBar />
-            <HeaderLayout>{children}</HeaderLayout>
-          </SidebarProvider>
+          {/* <SidebarProvider>
+            <SideBar /> */}
+          {/* <HeaderLayout>{children}</HeaderLayout> */}
+          {children}
+          {/* </SidebarProvider> */}
           <Toaster />
         </AuthProvider>
       </UserProvider>
