@@ -46,7 +46,7 @@ export function Navbar() {
                   <li className="row-span-3">
                     <NavigationMenuLink asChild>
                       <Link
-                        href="/"
+                        href="/budget"
                         className="flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-transparent p-6 no-underline outline-none select-none transition hover:bg-muted/70 focus:shadow-md"
                       >
                         <div className="mt-4 mb-2 text-lg font-semibold text-foreground">
@@ -59,7 +59,7 @@ export function Navbar() {
                       </Link>
                     </NavigationMenuLink>
                   </li>
-                  <ListItem href="#" title="Build a Custom Budget">
+                  <ListItem href="/budget" title="Build a Custom Budget">
                     Create and edit your budget without signing in— it&apos;s
                     that easy.
                   </ListItem>
